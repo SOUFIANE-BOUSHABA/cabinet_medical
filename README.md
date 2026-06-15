@@ -4,11 +4,6 @@ Backend-only REST API for a medical cabinet management system: authentication, p
 doctors, appointments (normal & urgent), medical records, consultations, documents,
 notifications, cabinet settings and role-based dashboards.
 
-> Built from the project's *cahier des charges*, *rapport de recherche* and the UML class &
-> use-case diagrams. Where the diagrams and the cahier des charges disagreed, the cahier des
-> charges / project brief wins (see [Conflict resolution & decisions](#conflict-resolution--decisions)).
-
----
 
 ## Table of contents
 - [Technologies](#technologies)
