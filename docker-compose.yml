@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cabinet_medical_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cabinet_medical}
+      POSTGRES_USER: ${POSTGRES_USER:-cabinet_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cabinet_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - cabinet_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cabinet_user} -d ${POSTGRES_DB:-cabinet_medical}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cabinet_medical_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-cabinet_medical}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-cabinet_user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-cabinet_password}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-pt28-cabinet-medical-very-secret-key-change-me-in-production-256bits}
+      APP_UPLOAD_DIR: /app/uploads
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    volumes:
+      - cabinet_uploads:/app/uploads
+
+volumes:
+  cabinet_pgdata:
+  cabinet_uploads:

@@ -1,0 +1,7 @@
+# Production profile overrides.
+# Swagger / OpenAPI is disabled outside of the dev profile (security requirement).
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

@@ -1,0 +1,367 @@
+{
+  "info": {
+    "name": "PT28 - Cabinet Medical API",
+    "description": "REST API collection for the PT28 Gestionnaire de Cabinet Medical backend.\n\nQuick start:\n1. Run 'Auth > Staff Login (Admin)', 'Staff Login (Doctor)', 'Staff Login (Secretary)' and 'Patient Login' once. Each request auto-saves its token into the matching collection variable (adminToken, doctorToken, secretaryToken, patientToken).\n2. The other requests reference those variables in their Authorization header.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/v1" },
+    { "key": "adminToken", "value": "" },
+    { "key": "doctorToken", "value": "" },
+    { "key": "secretaryToken", "value": "" },
+    { "key": "patientToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Staff Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('adminToken', pm.response.json().accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/staff/login", "host": ["{{baseUrl}}"], "path": ["auth", "staff", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@cabinet.ma\",\n  \"password\": \"Admin123!\"\n}" }
+          }
+        },
+        {
+          "name": "Staff Login (Doctor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('doctorToken', pm.response.json().accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/staff/login", "host": ["{{baseUrl}}"], "path": ["auth", "staff", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"doctor@cabinet.ma\",\n  \"password\": \"Doctor123!\"\n}" }
+          }
+        },
+        {
+          "name": "Staff Login (Secretary)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('secretaryToken', pm.response.json().accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/staff/login", "host": ["{{baseUrl}}"], "path": ["auth", "staff", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"secretary@cabinet.ma\",\n  \"password\": \"Secretary123!\"\n}" }
+          }
+        },
+        {
+          "name": "Patient Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('patientToken', pm.response.json().accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/patient/login", "host": ["{{baseUrl}}"], "path": ["auth", "patient", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"cin\": \"AA123456\",\n  \"password\": \"Patient123!\"\n}" }
+          }
+        },
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/patient/register", "host": ["{{baseUrl}}"], "path": ["auth", "patient", "register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"cin\": \"BE123456\",\n  \"firstName\": \"Nadia\",\n  \"lastName\": \"El Amrani\",\n  \"phone\": \"0600112233\",\n  \"email\": \"nadia@example.com\",\n  \"birthDate\": \"1993-07-12\",\n  \"address\": \"Marrakech\",\n  \"gender\": \"FEMALE\",\n  \"password\": \"Patient123!\"\n}" }
+          }
+        },
+        {
+          "name": "Me (current user)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "List Pending Patients",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/patients/pending", "host": ["{{baseUrl}}"], "path": ["patients", "pending"] }
+          }
+        },
+        {
+          "name": "Approve Patient",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/patients/2/approve", "host": ["{{baseUrl}}"], "path": ["patients", "2", "approve"] }
+          }
+        },
+        {
+          "name": "Reject Patient",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/patients/2/reject", "host": ["{{baseUrl}}"], "path": ["patients", "2", "reject"] }
+          }
+        },
+        {
+          "name": "Search Patient by Keyword",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/patients/search?keyword=AA123456", "host": ["{{baseUrl}}"], "path": ["patients", "search"], "query": [{ "key": "keyword", "value": "AA123456" }] }
+          }
+        },
+        {
+          "name": "Get Patient by CIN",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/patients/by-cin/AA123456", "host": ["{{baseUrl}}"], "path": ["patients", "by-cin", "AA123456"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create Appointment Request (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/appointments/request", "host": ["{{baseUrl}}"], "path": ["appointments", "request"] },
+            "body": { "mode": "raw", "raw": "{\n  \"doctorId\": 1,\n  \"date\": \"2030-03-10\",\n  \"startTime\": \"09:00:00\",\n  \"reason\": \"Headache\"\n}" }
+          }
+        },
+        {
+          "name": "Create Appointment (Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{secretaryToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/appointments", "host": ["{{baseUrl}}"], "path": ["appointments"] },
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"date\": \"2030-03-11\",\n  \"startTime\": \"10:00:00\",\n  \"reason\": \"Follow-up\"\n}" }
+          }
+        },
+        {
+          "name": "Create Urgent Appointment (Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{secretaryToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/appointments/urgent", "host": ["{{baseUrl}}"], "path": ["appointments", "urgent"] },
+            "body": { "mode": "raw", "raw": "{\n  \"patientId\": 1,\n  \"doctorId\": 1,\n  \"date\": \"2030-03-12\",\n  \"startTime\": \"11:00:00\",\n  \"reason\": \"Emergency\"\n}" }
+          }
+        },
+        {
+          "name": "Confirm Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/appointments/1/confirm", "host": ["{{baseUrl}}"], "path": ["appointments", "1", "confirm"] }
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/appointments/1/cancel", "host": ["{{baseUrl}}"], "path": ["appointments", "1", "cancel"] }
+          }
+        },
+        {
+          "name": "Complete Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/appointments/1/complete", "host": ["{{baseUrl}}"], "path": ["appointments", "1", "complete"] }
+          }
+        },
+        {
+          "name": "My Appointments (Patient)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": { "raw": "{{baseUrl}}/appointments/my", "host": ["{{baseUrl}}"], "path": ["appointments", "my"] }
+          }
+        },
+        {
+          "name": "Available Slots",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/appointments/available-slots?doctorId=1&date=2030-03-10", "host": ["{{baseUrl}}"], "path": ["appointments", "available-slots"], "query": [{ "key": "doctorId", "value": "1" }, { "key": "date", "value": "2030-03-10" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Medical Records & Consultations",
+      "item": [
+        {
+          "name": "My Medical Record (Patient)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": { "raw": "{{baseUrl}}/medical-records/my", "host": ["{{baseUrl}}"], "path": ["medical-records", "my"] }
+          }
+        },
+        {
+          "name": "Create Consultation (Doctor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/consultations", "host": ["{{baseUrl}}"], "path": ["consultations"] },
+            "body": { "mode": "raw", "raw": "{\n  \"medicalRecordId\": 1,\n  \"consultationDate\": \"2026-06-15\",\n  \"diagnosis\": \"Seasonal flu\",\n  \"notes\": \"Rest and hydration\",\n  \"treatment\": \"Paracetamol 500mg\"\n}" }
+          }
+        },
+        {
+          "name": "List Consultations of a Record",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/consultations/record/1", "host": ["{{baseUrl}}"], "path": ["consultations", "record", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications & Settings",
+      "item": [
+        {
+          "name": "Simulate Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{secretaryToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/notifications/simulate", "host": ["{{baseUrl}}"], "path": ["notifications", "simulate"] },
+            "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": 1,\n  \"channel\": \"WHATSAPP\",\n  \"recipient\": \"0600000000\",\n  \"message\": \"Reminder: your appointment is tomorrow.\"\n}" }
+          }
+        },
+        {
+          "name": "My Notifications (Patient)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": { "raw": "{{baseUrl}}/notifications/my", "host": ["{{baseUrl}}"], "path": ["notifications", "my"] }
+          }
+        },
+        {
+          "name": "Get Settings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/settings", "host": ["{{baseUrl}}"], "path": ["settings"] }
+          }
+        },
+        {
+          "name": "Update Settings (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{baseUrl}}/settings", "host": ["{{baseUrl}}"], "path": ["settings"] },
+            "body": { "mode": "raw", "raw": "{\n  \"dailyAppointmentLimit\": 25,\n  \"openingTime\": \"08:30:00\",\n  \"closingTime\": \"18:30:00\",\n  \"appointmentDuration\": 30\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboards",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/admin", "host": ["{{baseUrl}}"], "path": ["dashboard", "admin"] }
+          }
+        },
+        {
+          "name": "Doctor Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/doctor", "host": ["{{baseUrl}}"], "path": ["dashboard", "doctor"] }
+          }
+        },
+        {
+          "name": "Secretary Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{secretaryToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/secretary", "host": ["{{baseUrl}}"], "path": ["dashboard", "secretary"] }
+          }
+        },
+        {
+          "name": "Patient Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard/patient", "host": ["{{baseUrl}}"], "path": ["dashboard", "patient"] }
+          }
+        }
+      ]
+    }
+  ]
+}
