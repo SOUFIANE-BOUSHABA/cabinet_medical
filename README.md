@@ -24,7 +24,7 @@ If you want to run the backend without Docker, install JDK 17 or newer.
 Open PowerShell in the project root:
 
 ```powershell
-cd C:\Users\ycode\Desktop\cabinet-medical\backend
+cd to cabinet-medical\backend
 docker compose up --build -d
 ```
 
@@ -75,7 +75,7 @@ jdbc:postgresql://localhost:5432/cabinet_medical
 Keep the backend running. Open a second PowerShell terminal:
 
 ```powershell
-cd C:\Users\ycode\Desktop\cabinet-medical\frontend
+cd to cabinet-medical\frontend
 npm install
 npm run api:types
 npm run dev
