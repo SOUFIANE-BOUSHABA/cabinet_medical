@@ -3,6 +3,7 @@ import { DashboardPage } from '@/features/auth/pages/dashboard-page'
 import { PatientAuthPage } from '@/features/auth/pages/patient-auth-page'
 import { StaffLoginPage } from '@/features/auth/pages/staff-login-page'
 import { ProtectedRoute, PublicOnlyRoute } from '@/features/auth/route-guards'
+import { DoctorManagementPage } from '@/features/doctors/pages/doctor-management-page'
 import { NotFoundPage } from '@/pages/not-found-page'
 import { SetupPage } from '@/pages/setup-page'
 import { UnauthorizedPage } from '@/pages/unauthorized-page'
@@ -57,6 +58,9 @@ function App() {
           path="/secretary/dashboard"
           element={<DashboardPage expectedRole="SECRETARY" />}
         />
+        <Route path="/admin/doctors" element={<DoctorManagementPage />} />
+        <Route path="/doctor/doctors" element={<DoctorManagementPage />} />
+        <Route path="/secretary/doctors" element={<DoctorManagementPage />} />
       </Route>
 
       <Route
@@ -66,6 +70,7 @@ function App() {
           path="/patient/dashboard"
           element={<DashboardPage expectedRole="PATIENT" />}
         />
+        <Route path="/patient/doctors" element={<DoctorManagementPage />} />
       </Route>
 
       <Route path="/setup" element={<SetupPage />} />

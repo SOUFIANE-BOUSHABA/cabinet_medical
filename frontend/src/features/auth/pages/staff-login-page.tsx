@@ -1,11 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  BriefcaseMedical,
-  Headphones,
-  LockKeyhole,
-  Mail,
-  ShieldCheck,
-} from 'lucide-react'
+import { BriefcaseMedical, Headphones, Mail, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -158,8 +152,6 @@ export function StaffLoginPage() {
 
             <SubmitButton loading={isSubmitting}>Se connecter</SubmitButton>
           </form>
-
-         
         </section>
 
         <footer className="mt-8 text-center text-[11px] leading-6 text-[#6f7a90]">
