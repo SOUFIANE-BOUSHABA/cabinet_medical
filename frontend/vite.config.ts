@@ -18,7 +18,10 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         '/api': {
-          target: env.VITE_DEV_API_TARGET || 'http://localhost:8080',
+          // Use the IPv4 loopback explicitly on Windows. Depending on the
+          // machine, `localhost` may resolve to ::1 while Docker publishes the
+          // Spring Boot port on IPv4, leaving proxied requests pending.
+          target: env.VITE_DEV_API_TARGET || 'http://127.0.0.1:8080',
           changeOrigin: true,
         },
       },
