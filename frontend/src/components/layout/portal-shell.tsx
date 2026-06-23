@@ -1,4 +1,4 @@
-import { LayoutDashboard, LogOut, Menu, Stethoscope, X } from 'lucide-react'
+import { LayoutDashboard, LogOut, Menu, Stethoscope, Users, X } from 'lucide-react'
 import { useState, type PropsWithChildren } from 'react'
 import { NavLink } from 'react-router-dom'
 import { BrandLogo } from '@/features/auth/ui/brand-logo'
@@ -18,6 +18,10 @@ function doctorsPath(role: UserRole) {
   return `/${role.toLowerCase()}/doctors`
 }
 
+function patientsPath(role: UserRole) {
+  return `/${role.toLowerCase()}/patients`
+}
+
 export function PortalShell({ children }: PropsWithChildren) {
   const { user, logout } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -34,6 +38,11 @@ export function PortalShell({ children }: PropsWithChildren) {
       label: 'Médecins',
       to: doctorsPath(user.role),
       icon: Stethoscope,
+    },
+    {
+      label: 'Patients',
+      to: patientsPath(user.role),
+      icon: Users,
     },
   ]
 
@@ -111,7 +120,7 @@ export function PortalShell({ children }: PropsWithChildren) {
         </div>
       </aside>
 
-      <div className="md:pl-[160px]">
+      <div className="md:pl-[260px]">
         <header className="flex h-[68px] items-center justify-between border-b border-[#dfe4f0] bg-[#f9faff] px-4 sm:px-6">
           <button
             type="button"

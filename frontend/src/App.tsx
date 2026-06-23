@@ -1,3 +1,4 @@
+import { PatientManagementPage } from '@/features/patients/pages/patient-management-page'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { DashboardPage } from '@/features/auth/pages/dashboard-page'
 import { PatientAuthPage } from '@/features/auth/pages/patient-auth-page'
@@ -61,6 +62,9 @@ function App() {
         <Route path="/admin/doctors" element={<DoctorManagementPage />} />
         <Route path="/doctor/doctors" element={<DoctorManagementPage />} />
         <Route path="/secretary/doctors" element={<DoctorManagementPage />} />
+      <Route path="/admin/patients" element={<PatientManagementPage />} />
+        <Route path="/doctor/patients" element={<PatientManagementPage />} />
+        <Route path="/secretary/patients" element={<PatientManagementPage />} />
       </Route>
 
       <Route
