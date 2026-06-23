@@ -3,6 +3,8 @@ import { DashboardPage } from '@/features/auth/pages/dashboard-page'
 import { PatientAuthPage } from '@/features/auth/pages/patient-auth-page'
 import { StaffLoginPage } from '@/features/auth/pages/staff-login-page'
 import { ProtectedRoute, PublicOnlyRoute } from '@/features/auth/route-guards'
+import { AppointmentBookingPage } from '@/features/appointments/pages/appointment-booking-page'
+import { MyAppointmentsPage } from '@/features/appointments/pages/my-appointments-page'
 import { DoctorManagementPage } from '@/features/doctors/pages/doctor-management-page'
 import { NotFoundPage } from '@/pages/not-found-page'
 import { SetupPage } from '@/pages/setup-page'
@@ -71,6 +73,14 @@ function App() {
           element={<DashboardPage expectedRole="PATIENT" />}
         />
         <Route path="/patient/doctors" element={<DoctorManagementPage />} />
+        <Route
+          path="/patient/appointments/book"
+          element={<AppointmentBookingPage />}
+        />
+        <Route
+          path="/patient/appointments"
+          element={<MyAppointmentsPage />}
+        />
       </Route>
 
       <Route path="/setup" element={<SetupPage />} />

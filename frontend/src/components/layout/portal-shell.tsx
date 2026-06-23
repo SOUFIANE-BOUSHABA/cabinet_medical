@@ -1,4 +1,4 @@
-import { LayoutDashboard, LogOut, Menu, Stethoscope, X } from 'lucide-react'
+import { Calendar, CalendarPlus, LayoutDashboard, LogOut, Menu, Stethoscope, X } from 'lucide-react'
 import { useState, type PropsWithChildren } from 'react'
 import { NavLink } from 'react-router-dom'
 import { BrandLogo } from '@/features/auth/ui/brand-logo'
@@ -24,12 +24,28 @@ export function PortalShell({ children }: PropsWithChildren) {
 
   if (!user) return null
 
+  const isPatient = user.role === 'PATIENT'
+
   const navigation = [
     {
       label: 'Tableau de bord',
       to: getDashboardPath(user.role),
       icon: LayoutDashboard,
     },
+    ...(isPatient
+      ? [
+          {
+            label: 'Prendre RDV',
+            to: '/patient/appointments/book',
+            icon: CalendarPlus,
+          },
+          {
+            label: 'Mes rendez-vous',
+            to: '/patient/appointments',
+            icon: Calendar,
+          },
+        ]
+      : []),
     {
       label: 'Médecins',
       to: doctorsPath(user.role),
