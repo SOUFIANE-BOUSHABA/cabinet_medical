@@ -3,6 +3,8 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { PatientAuthPage } from '@/features/auth/pages/patient-auth-page'
 import { StaffLoginPage } from '@/features/auth/pages/staff-login-page'
 import { ProtectedRoute, PublicOnlyRoute } from '@/features/auth/route-guards'
+import { AppointmentBookingPage } from '@/features/appointments/pages/appointment-booking-page'
+import { MyAppointmentsPage } from '@/features/appointments/pages/my-appointments-page'
 import { DashboardPage } from '@/features/dashboard/pages/dashboard-page'
 import { DoctorManagementPage } from '@/features/doctors/pages/doctor-management-page'
 import { ModulePlaceholderPage } from '@/pages/module-placeholder-page'
@@ -221,23 +223,18 @@ function App() {
         <Route path="/patient/doctors" element={<DoctorManagementPage />} />
 
         <Route
-          path="/patient/appointments"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="PATIENT"
-              title="Mes rendez-vous"
-            />
-          }
+          path="/patient/appointments/book"
+          element={<AppointmentBookingPage />}
         />
 
         <Route
           path="/patient/request-appointment"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="PATIENT"
-              title="Demander un rendez-vous"
-            />
-          }
+          element={<Navigate to="/patient/appointments/book" replace />}
+        />
+
+        <Route
+          path="/patient/appointments"
+          element={<MyAppointmentsPage />}
         />
 
         <Route
