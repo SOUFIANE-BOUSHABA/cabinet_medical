@@ -15,7 +15,8 @@ export function PortalShell({ children }: PropsWithChildren) {
 
   if (!user) return null
 
-  const navigation = roleNavigation[user.role]
+  const navigation = roleNavigation[user.role] ?? []
+
   const initials = user.displayName
     .split(' ')
     .map((part) => part[0])
@@ -47,6 +48,7 @@ export function PortalShell({ children }: PropsWithChildren) {
               Gestion Clinique
             </p>
           </div>
+
           <button
             type="button"
             className="mt-1 grid size-9 place-items-center rounded-xl text-slate-500 hover:bg-slate-50 lg:hidden"
@@ -104,6 +106,7 @@ export function PortalShell({ children }: PropsWithChildren) {
             >
               <Menu className="size-5" />
             </button>
+
             <label className="relative hidden w-full max-w-md sm:block">
               <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-slate-400" />
               <input
@@ -121,6 +124,7 @@ export function PortalShell({ children }: PropsWithChildren) {
             >
               <Bell className="size-5" aria-hidden="true" />
             </button>
+
             <div className="hidden text-right leading-tight sm:block">
               <p className="text-xs font-bold tracking-[0.16em] text-[#075fd7] uppercase">
                 {roleLabels[user.role]}
@@ -129,6 +133,7 @@ export function PortalShell({ children }: PropsWithChildren) {
                 {user.displayName}
               </p>
             </div>
+
             <div
               className="grid size-10 place-items-center rounded-full bg-[#d9e5ff] text-xs font-bold text-[#075fd7] ring-2 ring-white"
               aria-hidden="true"

@@ -1,3 +1,4 @@
+import { PatientManagementPage } from '@/features/patients/pages/patient-management-page'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { PatientAuthPage } from '@/features/auth/pages/patient-auth-page'
 import { StaffLoginPage } from '@/features/auth/pages/staff-login-page'
@@ -22,6 +23,7 @@ function App() {
           </PublicOnlyRoute>
         }
       />
+
       <Route
         path="/patient/login"
         element={
@@ -30,6 +32,7 @@ function App() {
           </PublicOnlyRoute>
         }
       />
+
       <Route
         path="/patient/register"
         element={
@@ -51,21 +54,19 @@ function App() {
           path="/admin/dashboard"
           element={<DashboardPage expectedRole="ADMIN" />}
         />
+
         <Route
           path="/doctor/dashboard"
           element={<DashboardPage expectedRole="DOCTOR" />}
         />
+
         <Route
           path="/secretary/dashboard"
           element={<DashboardPage expectedRole="SECRETARY" />}
         />
 
-        <Route
-          path="/admin/patients"
-          element={
-            <ModulePlaceholderPage expectedRole="ADMIN" title="Patients" />
-          }
-        />
+        <Route path="/admin/patients" element={<PatientManagementPage />} />
+
         <Route
           path="/admin/pending-patients"
           element={
@@ -75,13 +76,16 @@ function App() {
             />
           }
         />
+
         <Route path="/admin/doctors" element={<DoctorManagementPage />} />
+
         <Route
           path="/admin/appointments"
           element={
             <ModulePlaceholderPage expectedRole="ADMIN" title="Rendez-vous" />
           }
         />
+
         <Route
           path="/admin/medical-records"
           element={
@@ -91,18 +95,21 @@ function App() {
             />
           }
         />
+
         <Route
           path="/admin/notifications"
           element={
             <ModulePlaceholderPage expectedRole="ADMIN" title="Notifications" />
           }
         />
+
         <Route
           path="/admin/users"
           element={
             <ModulePlaceholderPage expectedRole="ADMIN" title="Utilisateurs" />
           }
         />
+
         <Route
           path="/admin/settings"
           element={
@@ -110,12 +117,8 @@ function App() {
           }
         />
 
-        <Route
-          path="/secretary/patients"
-          element={
-            <ModulePlaceholderPage expectedRole="SECRETARY" title="Patients" />
-          }
-        />
+        <Route path="/secretary/patients" element={<PatientManagementPage />} />
+
         <Route
           path="/secretary/pending-patients"
           element={
@@ -125,7 +128,9 @@ function App() {
             />
           }
         />
+
         <Route path="/secretary/doctors" element={<DoctorManagementPage />} />
+
         <Route
           path="/secretary/appointments"
           element={
@@ -135,6 +140,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/secretary/medical-records"
           element={
@@ -144,6 +150,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/secretary/notifications"
           element={
@@ -154,19 +161,17 @@ function App() {
           }
         />
 
-        <Route
-          path="/doctor/patients"
-          element={
-            <ModulePlaceholderPage expectedRole="DOCTOR" title="Patients" />
-          }
-        />
+        <Route path="/doctor/patients" element={<PatientManagementPage />} />
+
         <Route path="/doctor/doctors" element={<DoctorManagementPage />} />
+
         <Route
           path="/doctor/appointments"
           element={
             <ModulePlaceholderPage expectedRole="DOCTOR" title="Rendez-vous" />
           }
         />
+
         <Route
           path="/doctor/medical-records"
           element={
@@ -176,6 +181,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/doctor/consultations"
           element={
@@ -185,12 +191,14 @@ function App() {
             />
           }
         />
+
         <Route
           path="/doctor/documents"
           element={
             <ModulePlaceholderPage expectedRole="DOCTOR" title="Documents" />
           }
         />
+
         <Route
           path="/doctor/notifications"
           element={
@@ -209,7 +217,9 @@ function App() {
           path="/patient/dashboard"
           element={<DashboardPage expectedRole="PATIENT" />}
         />
+
         <Route path="/patient/doctors" element={<DoctorManagementPage />} />
+
         <Route
           path="/patient/appointments"
           element={
@@ -219,6 +229,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/patient/request-appointment"
           element={
@@ -228,6 +239,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/patient/medical-record"
           element={
@@ -237,6 +249,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/patient/notifications"
           element={
