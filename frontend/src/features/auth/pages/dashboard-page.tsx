@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/use-auth'
 import { BrandLogo } from '@/features/auth/ui/brand-logo'
 import type { UserRole } from '@/types/auth'
 
+
 const roleNames: Record<UserRole, string> = {
   ADMIN: 'Administrateur',
   DOCTOR: 'Médecin',
