@@ -1,7 +1,6 @@
 import { keepPreviousData } from '@tanstack/react-query'
 import {
   getPatient,
-  getPatientByCin,
   getPatients,
   getPendingPatients,
   searchPatients,
