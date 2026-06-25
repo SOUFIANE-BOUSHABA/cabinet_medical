@@ -1,6 +1,5 @@
 import { apiClient } from '@/lib/api/client'
 import type { components } from '@/types/api'
-import type { PROTOTYPE_KEYWORDS } from 'node_modules/react-hook-form/dist/constants'
 
 // We infer these type names based on standard OpenAPI generation 
 // (just like the Doctors module)

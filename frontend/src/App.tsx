@@ -5,6 +5,7 @@ import { StaffLoginPage } from '@/features/auth/pages/staff-login-page'
 import { ProtectedRoute, PublicOnlyRoute } from '@/features/auth/route-guards'
 import { AppointmentBookingPage } from '@/features/appointments/pages/appointment-booking-page'
 import { MyAppointmentsPage } from '@/features/appointments/pages/my-appointments-page'
+import { DoctorConsultationsPage } from '@/features/consultations/pages/doctor-consultations-page'
 import { DashboardPage } from '@/features/dashboard/pages/dashboard-page'
 import { DoctorManagementPage } from '@/features/doctors/pages/doctor-management-page'
 import { ModulePlaceholderPage } from '@/pages/module-placeholder-page'
@@ -186,12 +187,7 @@ function App() {
 
         <Route
           path="/doctor/consultations"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="DOCTOR"
-              title="Consultations"
-            />
-          }
+          element={<DoctorConsultationsPage />}
         />
 
         <Route
