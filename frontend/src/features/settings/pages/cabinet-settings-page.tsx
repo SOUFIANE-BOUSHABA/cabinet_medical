@@ -171,10 +171,7 @@ function SettingsEditor({ canUpdate, initialForm }: SettingsEditorProps) {
           <h2 className="text-lg font-black text-[#101b31]">
             Règles de planification
           </h2>
-          <p className="mt-1 text-sm font-semibold text-slate-500">
-            Ces valeurs sont envoyées directement à l’endpoint
-            `/api/v1/settings`.
-          </p>
+         
         </div>
 
         <div className="mt-5 grid gap-4 md:grid-cols-2">

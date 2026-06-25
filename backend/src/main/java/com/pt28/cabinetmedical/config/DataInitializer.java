@@ -81,41 +81,16 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private User seedStaff(String name, String email, String rawPassword, Role role) {
-        return userRepository.findByEmail(email)
-                .map(existing -> {
-                    boolean changed = false;
-                    if (!name.equals(existing.getName())) {
-                        existing.setName(name);
-                        changed = true;
-                    }
-                    if (existing.getRole() != role) {
-                        existing.setRole(role);
-                        changed = true;
-                    }
-                    if (!existing.isEnabled()) {
-                        existing.setEnabled(true);
-                        changed = true;
-                    }
-                    if (!passwordEncoder.matches(rawPassword, existing.getPassword())) {
-                        existing.setPassword(passwordEncoder.encode(rawPassword));
-                        changed = true;
-                    }
-                    if (changed) {
-                        log.info("Repairing seeded {} account: {}", role, email);
-                        return userRepository.save(existing);
-                    }
-                    return existing;
-                })
-                .orElseGet(() -> {
-                    log.info("Seeding {} account: {}", role, email);
-                    return userRepository.save(User.builder()
-                            .name(name)
-                            .email(email)
-                            .password(passwordEncoder.encode(rawPassword))
-                            .role(role)
-                            .enabled(true)
-                            .build());
-                });
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            log.info("Seeding {} account: {}", role, email);
+            return userRepository.save(User.builder()
+                    .name(name)
+                    .email(email)
+                    .password(passwordEncoder.encode(rawPassword))
+                    .role(role)
+                    .enabled(true)
+                    .build());
+        });
     }
 
     private void seedDoctorProfile(User doctorUser) {
