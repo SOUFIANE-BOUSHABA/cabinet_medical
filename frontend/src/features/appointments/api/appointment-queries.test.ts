@@ -33,11 +33,7 @@ describe('appointmentKeys', () => {
   })
 
   it('detail est un sous-ensemble de details', () => {
-    expect(appointmentKeys.detail(5)).toEqual([
-      'appointments',
-      'detail',
-      5,
-    ])
+    expect(appointmentKeys.detail(5)).toEqual(['appointments', 'detail', 5])
   })
 })
 

@@ -1,15 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertCircle, Calendar, ChevronRight, Clock, LoaderCircle, Stethoscope } from 'lucide-react'
+import {
+  AlertCircle,
+  Calendar,
+  ChevronRight,
+  Clock,
+  LoaderCircle,
+  Stethoscope,
+} from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { PortalShell } from '@/components/layout/portal-shell'
 import { getDoctors } from '@/features/doctors/api/doctors-api'
-import { requestAppointment, type AvailableSlot } from '@/features/appointments/api/appointments-api'
-import { appointmentKeys, availableSlotsQuery } from '@/features/appointments/api/appointment-queries'
-import { requestAppointmentSchema, type RequestAppointmentFormValues } from '@/features/appointments/schemas/appointment-schemas'
+import {
+  requestAppointment,
+  type AvailableSlot,
+} from '@/features/appointments/api/appointments-api'
+import {
+  appointmentKeys,
+  availableSlotsQuery,
+} from '@/features/appointments/api/appointment-queries'
+import {
+  requestAppointmentSchema,
+  type RequestAppointmentFormValues,
+} from '@/features/appointments/schemas/appointment-schemas'
 import { getApiErrorMessage } from '@/lib/api/client'
+import { formatTime, serializeTime } from '@/lib/utils/format'
 
 function valueOrDash(value?: string) {
   return value?.trim() || 'Non renseigné'
@@ -27,7 +44,9 @@ export function AppointmentBookingPage() {
     queryFn: () => getDoctors({ page: 0, size: 50 }),
   })
 
-  const slots = useQuery(availableSlotsQuery(selectedDoctorId ?? 0, selectedDate))
+  const slots = useQuery(
+    availableSlotsQuery(selectedDoctorId ?? 0, selectedDate),
+  )
 
   const form = useForm<RequestAppointmentFormValues>({
     resolver: zodResolver(requestAppointmentSchema),
@@ -42,8 +61,10 @@ export function AppointmentBookingPage() {
   const requestMutation = useMutation({
     mutationFn: requestAppointment,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: appointmentKeys.myLists() })
-      toast.success('Demande de rendez-vous envoyée avec succès')
+      await queryClient.invalidateQueries({
+        queryKey: appointmentKeys.myLists(),
+      })
+      toast.success('Demande envoyée. Elle sera validée par l’administration.')
       form.reset()
       setSelectedDoctorId(null)
       setSelectedDate('')
@@ -67,23 +88,24 @@ export function AppointmentBookingPage() {
   }
 
   function handleSelectSlot(slot: AvailableSlot) {
-    const time = `${String(slot.startTime?.hour ?? 0).padStart(2, '0')}:${String(slot.startTime?.minute ?? 0).padStart(2, '0')}`
+    const time = formatTime(slot.startTime)
     setSelectedSlot(time)
     form.setValue('startTime', time)
     setStep('confirm')
   }
 
   async function handleSubmit(values: RequestAppointmentFormValues) {
-    const [hour, minute] = values.startTime.split(':').map(Number)
     await requestMutation.mutateAsync({
       doctorId: values.doctorId,
       date: values.date,
-      startTime: { hour, minute },
+      startTime: serializeTime(values.startTime),
       reason: values.reason || undefined,
     })
   }
 
-  const selectedDoctor = doctors.data?.content?.find((d) => d.id === selectedDoctorId)
+  const selectedDoctor = doctors.data?.content?.find(
+    (d) => d.id === selectedDoctorId,
+  )
 
   return (
     <PortalShell>
@@ -91,18 +113,31 @@ export function AppointmentBookingPage() {
         <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <h1 className="text-xl leading-tight font-bold tracking-[-0.03em] text-[#101b31]">
-              Prendre un rendez-vous
+              Demander un rendez-vous
             </h1>
             <p className="mt-1 text-[11px] text-[#5f6c81]">
-              Sélectionnez un médecin, une date et un créneau horaire.
+              Envoyez une demande: elle restera en attente jusqu’à validation
+              par l’administration.
             </p>
           </div>
           <div className="flex items-center gap-2 text-[11px] text-[#5f6c81]">
-            <span className={step === 'doctor' ? 'font-bold text-[#075bd8]' : ''}>Médecin</span>
+            <span
+              className={step === 'doctor' ? 'font-bold text-[#075bd8]' : ''}
+            >
+              Médecin
+            </span>
             <ChevronRight className="size-3" />
-            <span className={step === 'datetime' ? 'font-bold text-[#075bd8]' : ''}>Date & heure</span>
+            <span
+              className={step === 'datetime' ? 'font-bold text-[#075bd8]' : ''}
+            >
+              Date & heure
+            </span>
             <ChevronRight className="size-3" />
-            <span className={step === 'confirm' ? 'font-bold text-[#075bd8]' : ''}>Confirmation</span>
+            <span
+              className={step === 'confirm' ? 'font-bold text-[#075bd8]' : ''}
+            >
+              Confirmation
+            </span>
           </div>
         </section>
 
@@ -117,7 +152,9 @@ export function AppointmentBookingPage() {
             ) : doctors.isError ? (
               <div className="grid min-h-48 place-items-center rounded-lg border border-[#cfd7e7] bg-white p-6 text-center">
                 <AlertCircle className="size-8 text-red-500" />
-                <p className="mt-2 text-sm text-slate-600">{getApiErrorMessage(doctors.error)}</p>
+                <p className="mt-2 text-sm text-slate-600">
+                  {getApiErrorMessage(doctors.error)}
+                </p>
                 <button
                   type="button"
                   onClick={() => void doctors.refetch()}
@@ -129,7 +166,9 @@ export function AppointmentBookingPage() {
             ) : doctors.data?.content?.length === 0 ? (
               <div className="grid min-h-48 place-items-center rounded-lg border border-[#cfd7e7] bg-white p-6 text-center">
                 <Stethoscope className="size-8 text-[#075bd8]" />
-                <p className="mt-2 text-sm font-bold text-[#142039]">Aucun médecin disponible</p>
+                <p className="mt-2 text-sm font-bold text-[#142039]">
+                  Aucun médecin disponible
+                </p>
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
@@ -159,8 +198,12 @@ export function AppointmentBookingPage() {
         {step === 'datetime' && selectedDoctor && (
           <section className="mt-4">
             <div className="mb-4 rounded-lg border border-[#cfd7e7] bg-white p-4">
-              <h3 className="text-sm font-bold text-[#17233b]">{selectedDoctor.name}</h3>
-              <p className="text-xs text-slate-500">{valueOrDash(selectedDoctor.specialty)}</p>
+              <h3 className="text-sm font-bold text-[#17233b]">
+                {selectedDoctor.name}
+              </h3>
+              <p className="text-xs text-slate-500">
+                {valueOrDash(selectedDoctor.specialty)}
+              </p>
               <button
                 type="button"
                 onClick={() => setStep('doctor')}
@@ -191,7 +234,9 @@ export function AppointmentBookingPage() {
                   </div>
                 ) : slots.isError ? (
                   <div className="rounded-lg border border-[#cfd7e7] bg-white p-6 text-center">
-                    <p className="text-xs text-red-600">{getApiErrorMessage(slots.error)}</p>
+                    <p className="text-xs text-red-600">
+                      {getApiErrorMessage(slots.error)}
+                    </p>
                   </div>
                 ) : slots.data && slots.data.length > 0 ? (
                   <>
@@ -200,7 +245,7 @@ export function AppointmentBookingPage() {
                     </p>
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                       {slots.data.map((slot, idx) => {
-                        const time = `${String(slot.startTime?.hour ?? 0).padStart(2, '0')}:${String(slot.startTime?.minute ?? 0).padStart(2, '0')}`
+                        const time = formatTime(slot.startTime)
                         return (
                           <button
                             key={idx}
@@ -231,19 +276,35 @@ export function AppointmentBookingPage() {
         {step === 'confirm' && selectedDoctor && selectedSlot && (
           <section className="mt-4">
             <div className="rounded-lg border border-[#cfd7e7] bg-white p-6">
-              <h2 className="text-sm font-bold text-[#17233b]">Confirmer votre demande</h2>
+              <h2 className="text-sm font-bold text-[#17233b]">
+                Envoyer votre demande
+              </h2>
+              <p className="mt-1 text-xs font-medium text-amber-700">
+                Statut après envoi: en attente. Un admin ou une secrétaire doit
+                accepter la demande.
+              </p>
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-xs font-semibold text-slate-500">Médecin</dt>
-                  <dd className="text-xs font-bold text-[#17233b]">{selectedDoctor.name}</dd>
+                  <dt className="text-xs font-semibold text-slate-500">
+                    Médecin
+                  </dt>
+                  <dd className="text-xs font-bold text-[#17233b]">
+                    {selectedDoctor.name}
+                  </dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-xs font-semibold text-slate-500">Date</dt>
-                  <dd className="text-xs font-bold text-[#17233b]">{selectedDate}</dd>
+                  <dd className="text-xs font-bold text-[#17233b]">
+                    {selectedDate}
+                  </dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-xs font-semibold text-slate-500">Créneau</dt>
-                  <dd className="text-xs font-bold text-[#17233b]">{selectedSlot}</dd>
+                  <dt className="text-xs font-semibold text-slate-500">
+                    Créneau
+                  </dt>
+                  <dd className="text-xs font-bold text-[#17233b]">
+                    {selectedSlot}
+                  </dd>
                 </div>
               </dl>
 
@@ -269,14 +330,14 @@ export function AppointmentBookingPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    form.handleSubmit(handleSubmit)()
-                  }
+                  onClick={() => form.handleSubmit(handleSubmit)()}
                   disabled={requestMutation.isPending}
                   className="inline-flex h-10 min-w-28 items-center justify-center gap-2 rounded-lg bg-[#075bd8] px-4 text-xs font-semibold text-white shadow-sm hover:bg-[#064fb9] disabled:opacity-60"
                 >
-                  {requestMutation.isPending && <LoaderCircle className="size-4 animate-spin" />}
-                  Confirmer la demande
+                  {requestMutation.isPending && (
+                    <LoaderCircle className="size-4 animate-spin" />
+                  )}
+                  Envoyer la demande
                 </button>
               </div>
             </div>

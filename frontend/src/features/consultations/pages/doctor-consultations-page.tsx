@@ -11,7 +11,7 @@ import {
   Search,
   Trash2,
 } from 'lucide-react'
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
 import { PortalShell } from '@/components/layout/portal-shell'
 import {
@@ -93,19 +93,19 @@ export function DoctorConsultationsPage() {
   const [form, setForm] = useState<ConsultationFormState>(() => emptyForm())
 
   const recordsQuery = useQuery(medicalRecordsQuery())
-  const consultationsQuery = useQuery(
-    consultationsByRecordQuery(selectedRecordId),
-  )
   const detailQuery = useQuery(consultationDetailQuery(detailId ?? 0))
 
-  const records = recordsQuery.data?.content ?? []
-  const selectedRecord = records.find((record) => record.id === selectedRecordId)
-
-  useEffect(() => {
-    if (selectedRecordId || records.length === 0) return
-    const firstRecordId = records[0]?.id
-    if (firstRecordId) setSelectedRecordId(firstRecordId)
-  }, [records, selectedRecordId])
+  const records = useMemo(
+    () => recordsQuery.data?.content ?? [],
+    [recordsQuery.data?.content],
+  )
+  const effectiveRecordId = selectedRecordId || records[0]?.id || 0
+  const consultationsQuery = useQuery(
+    consultationsByRecordQuery(effectiveRecordId),
+  )
+  const selectedRecord = records.find(
+    (record) => record.id === effectiveRecordId,
+  )
 
   const filteredRecords = useMemo(() => {
     const search = recordSearch.trim().toLowerCase()
@@ -123,7 +123,7 @@ export function DoctorConsultationsPage() {
     onSuccess: async (created) => {
       await queryClient.invalidateQueries({
         queryKey: consultationKeys.byRecord(
-          created.medicalRecordId ?? selectedRecordId,
+          created.medicalRecordId ?? effectiveRecordId,
         ),
       })
       toast.success('Consultation creee avec succes')
@@ -134,7 +134,13 @@ export function DoctorConsultationsPage() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, values }: { id: number; values: ConsultationFormState }) =>
+    mutationFn: ({
+      id,
+      values,
+    }: {
+      id: number
+      values: ConsultationFormState
+    }) =>
       updateConsultation(id, {
         consultationDate: values.consultationDate,
         diagnosis: values.diagnosis,
@@ -145,7 +151,7 @@ export function DoctorConsultationsPage() {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: consultationKeys.byRecord(
-            updated.medicalRecordId ?? selectedRecordId,
+            updated.medicalRecordId ?? effectiveRecordId,
           ),
         }),
         updated.id
@@ -166,7 +172,7 @@ export function DoctorConsultationsPage() {
     mutationFn: deleteConsultation,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: consultationKeys.byRecord(selectedRecordId),
+        queryKey: consultationKeys.byRecord(effectiveRecordId),
       })
       toast.success('Consultation supprimee')
       setDeleteTarget(null)
@@ -188,7 +194,7 @@ export function DoctorConsultationsPage() {
 
   const submitForm = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!selectedRecordId) {
+    if (!effectiveRecordId) {
       toast.error('Selectionnez un dossier medical')
       return
     }
@@ -203,7 +209,7 @@ export function DoctorConsultationsPage() {
       }
 
       await createMutation.mutateAsync({
-        medicalRecordId: selectedRecordId,
+        medicalRecordId: effectiveRecordId,
         consultationDate: form.consultationDate,
         diagnosis: form.diagnosis,
         notes: form.notes,
@@ -233,7 +239,7 @@ export function DoctorConsultationsPage() {
           <button
             type="button"
             onClick={openCreate}
-            disabled={!selectedRecordId}
+            disabled={!effectiveRecordId}
             className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-[#075bd8] px-4 text-xs font-semibold text-white shadow-sm hover:bg-[#064fb9] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus className="size-4" strokeWidth={2.2} />
@@ -299,7 +305,7 @@ export function DoctorConsultationsPage() {
                     type="button"
                     onClick={() => record.id && setSelectedRecordId(record.id)}
                     className={`block w-full px-4 py-3 text-left transition hover:bg-blue-50 ${
-                      selectedRecordId === record.id ? 'bg-[#eef5ff]' : ''
+                      effectiveRecordId === record.id ? 'bg-[#eef5ff]' : ''
                     }`}
                   >
                     <span className="block text-xs font-bold text-[#17233b]">
@@ -387,7 +393,7 @@ export function DoctorConsultationsPage() {
                         key={consultation.id}
                         className="border-t border-[#dce2ed] text-[11px] text-[#334158] hover:bg-[#fafbff]"
                       >
-                        <td className="whitespace-nowrap px-4 py-3.5 font-semibold text-[#17233b]">
+                        <td className="px-4 py-3.5 font-semibold whitespace-nowrap text-[#17233b]">
                           {formatDate(consultation.consultationDate)}
                         </td>
                         <td className="px-4 py-3.5">
@@ -499,7 +505,10 @@ export function DoctorConsultationsPage() {
               value={form.notes}
               maxLength={2000}
               onChange={(event) =>
-                setForm((current) => ({ ...current, notes: event.target.value }))
+                setForm((current) => ({
+                  ...current,
+                  notes: event.target.value,
+                }))
               }
               className="mt-1 min-h-20 w-full rounded-md border border-[#cfd7e7] px-3 py-2 text-sm outline-none focus:border-[#075bd8] focus:ring-1 focus:ring-[#075bd8]"
             />

@@ -1,12 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2, ChevronLeft, ChevronRight, Edit2, Plus, Search, Trash2, User } from 'lucide-react'
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Edit2,
+  Plus,
+  Search,
+  Trash2,
+  User,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { PortalShell } from '@/components/layout/portal-shell'
-import { approvePatient, deletePatient } from '@/features/patients/api/patients-api'
+import {
+  approvePatient,
+  deletePatient,
+  type Patient,
+} from '@/features/patients/api/patients-api'
 import { useAuth } from '@/features/auth/use-auth'
 import { CreatePatientModal } from '@/features/patients/components/create-patient-modal'
 import { useState, useEffect } from 'react'
-import { patientKeys, patientsQuery, searchPatientsQuery } from '@/features/patients/api/patient-queries'
+import {
+  patientKeys,
+  patientsQuery,
+  searchPatientsQuery,
+} from '@/features/patients/api/patient-queries'
 import { PatientDetailsDrawer } from '@/features/patients/components/patient-details-drawer'
 
 const PAGE_SIZE = 10
@@ -18,9 +35,10 @@ export function PatientManagementPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingPatient, setEditingPatient] = useState<any>(null) // <-- Added Edit State
-  const [viewingPatient, setViewingPatient] = useState<any>(null)
-  const isAdminOrSecretary = user?.role === 'ADMIN' || user?.role === 'SECRETARY'
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null)
+  const [viewingPatient, setViewingPatient] = useState<Patient | null>(null)
+  const isAdminOrSecretary =
+    user?.role === 'ADMIN' || user?.role === 'SECRETARY'
 
   // Debounce effect for the search bar
   useEffect(() => {
@@ -28,19 +46,17 @@ export function PatientManagementPage() {
       setDebouncedSearch(searchQuery)
       setPage(0) // Reset to page 1 on new search
     }, 400)
-    
+
     return () => clearTimeout(timer)
   }, [searchQuery])
 
   const isSearching = debouncedSearch.trim().length > 0
 
   // Switch between Search and Normal List
-  const queryConfig = isSearching 
-    ? searchPatientsQuery(debouncedSearch) 
-    : patientsQuery(page, PAGE_SIZE)
-
-  const { data: rawData, isLoading, isError, error } = useQuery(queryConfig as any)
-  const data = rawData as any
+  const patientList = useQuery(patientsQuery(page, PAGE_SIZE))
+  const patientSearch = useQuery(searchPatientsQuery(debouncedSearch))
+  const activeQuery = isSearching ? patientSearch : patientList
+  const { data, isLoading, isError, error } = activeQuery
 
   // Mutations for Action Buttons
   const approveMutation = useMutation({
@@ -49,7 +65,7 @@ export function PatientManagementPage() {
       toast.success('Dossier patient approuvé !')
       queryClient.invalidateQueries({ queryKey: patientKeys.lists() })
     },
-    onError: () => toast.error("Erreur lors de l'approbation.")
+    onError: () => toast.error("Erreur lors de l'approbation."),
   })
 
   const deleteMutation = useMutation({
@@ -58,7 +74,7 @@ export function PatientManagementPage() {
       toast.success('Patient supprimé.')
       queryClient.invalidateQueries({ queryKey: patientKeys.lists() })
     },
-    onError: () => toast.error("Erreur lors de la suppression.")
+    onError: () => toast.error('Erreur lors de la suppression.'),
   })
 
   const content = data?.content ?? []
@@ -75,7 +91,8 @@ export function PatientManagementPage() {
               Dossiers Patients
             </h1>
             <p className="mt-1 text-[11px] text-[#5f6c81]">
-              Gérez les dossiers médicaux, les approbations et les informations de contact.
+              Gérez les dossiers médicaux, les approbations et les informations
+              de contact.
             </p>
           </div>
           {isAdminOrSecretary && (
@@ -97,7 +114,7 @@ export function PatientManagementPage() {
         {/* Search Bar & Stats */}
         <section className="mt-4 flex items-center justify-between gap-4">
           <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Rechercher par nom, CIN ou téléphone..."
@@ -114,18 +131,26 @@ export function PatientManagementPage() {
         {/* The Table */}
         <section className="mt-4 overflow-hidden rounded-lg border border-[#cfd7e7] bg-white shadow-[0_2px_8px_rgba(16,29,53,0.06)]">
           {isLoading ? (
-            <div className="animate-pulse p-6 text-center text-sm text-slate-400">Chargement des patients...</div>
+            <div className="animate-pulse p-6 text-center text-sm text-slate-400">
+              Chargement des patients...
+            </div>
           ) : isError ? (
-            <div className="p-6 text-center text-red-500">Erreur lors du chargement: {String(error)}</div>
+            <div className="p-6 text-center text-red-500">
+              Erreur lors du chargement: {String(error)}
+            </div>
           ) : content.length === 0 ? (
             <div className="grid min-h-72 place-items-center p-6 text-center">
               <div>
                 <div className="mx-auto grid size-11 place-items-center rounded-full bg-blue-50 text-[#075bd8]">
                   <User className="size-5" />
                 </div>
-                <h2 className="mt-3 text-sm font-bold text-[#142039]">Aucun patient trouvé</h2>
+                <h2 className="mt-3 text-sm font-bold text-[#142039]">
+                  Aucun patient trouvé
+                </h2>
                 <p className="mt-1 text-xs text-slate-500">
-                  {isAdminOrSecretary ? "Ajoutez un nouveau patient pour commencer." : "L'annuaire est vide."}
+                  {isAdminOrSecretary
+                    ? 'Ajoutez un nouveau patient pour commencer.'
+                    : "L'annuaire est vide."}
                 </p>
               </div>
             </div>
@@ -142,39 +167,54 @@ export function PatientManagementPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {content.map((patient:any) => (
-                    <tr key={patient.id} className="border-t border-[#dce2ed] text-[11px] text-[#334158] hover:bg-[#fafbff]">
+                  {content.map((patient: Patient) => (
+                    <tr
+                      key={patient.id}
+                      className="border-t border-[#dce2ed] text-[11px] text-[#334158] hover:bg-[#fafbff]"
+                    >
                       <td className="px-4 py-3.5">
-                        <button 
-  onClick={() => setViewingPatient(patient)}
-  className="block text-left font-bold text-[#17233b] hover:text-[#075bd8] transition-colors"
->
-  {patient.firstName} {patient.lastName}
-</button>
-                        <span className="mt-0.5 block text-[10px] text-slate-500">{patient.email}</span>
+                        <button
+                          onClick={() => setViewingPatient(patient)}
+                          className="block text-left font-bold text-[#17233b] transition-colors hover:text-[#075bd8]"
+                        >
+                          {patient.firstName} {patient.lastName}
+                        </button>
+                        <span className="mt-0.5 block text-[10px] text-slate-500">
+                          {patient.email}
+                        </span>
                       </td>
                       <td className="px-4 py-3.5">{patient.cin || '—'}</td>
                       <td className="px-4 py-3.5">{patient.phone || '—'}</td>
                       <td className="px-4 py-3.5">
                         {patient.accountStatus === 'PENDING' ? (
-                          <span className="rounded-full bg-amber-100 px-2 py-1 text-[9px] font-bold text-amber-700">EN ATTENTE</span>
+                          <span className="rounded-full bg-amber-100 px-2 py-1 text-[9px] font-bold text-amber-700">
+                            EN ATTENTE
+                          </span>
                         ) : (
-                          <span className="rounded-full bg-emerald-100 px-2 py-1 text-[9px] font-bold text-emerald-700">ACTIF</span>
+                          <span className="rounded-full bg-emerald-100 px-2 py-1 text-[9px] font-bold text-emerald-700">
+                            ACTIF
+                          </span>
                         )}
                       </td>
                       <td className="px-4 py-3.5 text-right">
                         <div className="flex items-center justify-end gap-1">
                           {/* Approve Button */}
-                          {patient.accountStatus === 'PENDING' && isAdminOrSecretary && (
-                            <button
-                              onClick={() => approveMutation.mutate(patient.id!)}
-                              disabled={approveMutation.isPending}
-                              className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 disabled:opacity-50"
-                              title="Approuver le dossier"
-                            >
-                              <CheckCircle2 className="size-4" strokeWidth={2} />
-                            </button>
-                          )}
+                          {patient.accountStatus === 'PENDING' &&
+                            isAdminOrSecretary && (
+                              <button
+                                onClick={() =>
+                                  approveMutation.mutate(patient.id!)
+                                }
+                                disabled={approveMutation.isPending}
+                                className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 disabled:opacity-50"
+                                title="Approuver le dossier"
+                              >
+                                <CheckCircle2
+                                  className="size-4"
+                                  strokeWidth={2}
+                                />
+                              </button>
+                            )}
 
                           {/* Edit Button */}
                           <button
@@ -193,7 +233,11 @@ export function PatientManagementPage() {
                           {isAdminOrSecretary && (
                             <button
                               onClick={() => {
-                                if (window.confirm('Voulez-vous vraiment supprimer ce patient ?')) {
+                                if (
+                                  window.confirm(
+                                    'Voulez-vous vraiment supprimer ce patient ?',
+                                  )
+                                ) {
                                   deleteMutation.mutate(patient.id!)
                                 }
                               }}
@@ -218,7 +262,7 @@ export function PatientManagementPage() {
             <footer className="flex items-center justify-between border-t border-[#dce2ed] px-4 py-3">
               <button
                 disabled={page === 0}
-                onClick={() => setPage(p => p - 1)}
+                onClick={() => setPage((p) => p - 1)}
                 className="grid size-8 place-items-center rounded-md border text-slate-500 disabled:opacity-35"
               >
                 <ChevronLeft className="size-4" />
@@ -228,7 +272,7 @@ export function PatientManagementPage() {
               </span>
               <button
                 disabled={page >= totalPages - 1}
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => setPage((p) => p + 1)}
                 className="grid size-8 place-items-center rounded-md border text-slate-500 disabled:opacity-35"
               >
                 <ChevronRight className="size-4" />
@@ -239,16 +283,17 @@ export function PatientManagementPage() {
       </div>
 
       {/* <-- We pass the initialData down to the modal --> */}
-      <CreatePatientModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <CreatePatientModal
+        key={`${isModalOpen ? 'open' : 'closed'}-${editingPatient?.id ?? 'new'}`}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         initialData={editingPatient}
       />
-      <PatientDetailsDrawer 
-  isOpen={!!viewingPatient} 
-  onClose={() => setViewingPatient(null)} 
-  patient={viewingPatient} 
-/>
+      <PatientDetailsDrawer
+        isOpen={!!viewingPatient}
+        onClose={() => setViewingPatient(null)}
+        patient={viewingPatient}
+      />
     </PortalShell>
   )
 }

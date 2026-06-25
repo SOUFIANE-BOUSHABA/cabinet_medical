@@ -7,4 +7,6 @@ export const requestAppointmentSchema = z.object({
   reason: z.string().trim().max(500, 'Maximum 500 caractères').optional(),
 })
 
-export type RequestAppointmentFormValues = z.infer<typeof requestAppointmentSchema>
+export type RequestAppointmentFormValues = z.infer<
+  typeof requestAppointmentSchema
+>

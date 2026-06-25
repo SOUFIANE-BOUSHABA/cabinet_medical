@@ -1,4 +1,4 @@
-import { Bell, LogOut, Menu, Search, X } from 'lucide-react'
+import { Bell, ChevronRight, LogOut, Menu, Search, X } from 'lucide-react'
 import { useState, type PropsWithChildren } from 'react'
 import { NavLink } from 'react-router-dom'
 import { BrandLogo } from '@/features/auth/ui/brand-logo'
@@ -16,7 +16,6 @@ export function PortalShell({ children }: PropsWithChildren) {
   if (!user) return null
 
   const navigation = roleNavigation[user.role] ?? []
-
   const initials = user.displayName
     .split(' ')
     .map((part) => part[0])
@@ -25,7 +24,7 @@ export function PortalShell({ children }: PropsWithChildren) {
     .toUpperCase()
 
   return (
-    <div className="min-h-dvh bg-[linear-gradient(180deg,#f7faff_0%,#eef5ff_100%)] text-[#101d35]">
+    <div className="min-h-dvh bg-[#f4f8ff] text-[#101d35]">
       {mobileOpen ? (
         <button
           type="button"
@@ -37,14 +36,14 @@ export function PortalShell({ children }: PropsWithChildren) {
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex w-[288px] flex-col overflow-hidden border-r border-slate-200 bg-white px-5 py-6 shadow-[18px_0_54px_rgba(15,23,42,0.08)] transition-transform lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-40 flex w-[292px] flex-col overflow-hidden border-r border-slate-200/80 bg-white/95 px-5 py-6 shadow-[18px_0_54px_rgba(15,23,42,0.06)] backdrop-blur-xl transition-transform lg:translate-x-0',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <BrandLogo compact className="text-[30px] text-[#075fd7]" />
-            <p className="mt-1 pl-1 text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">
+            <BrandLogo compact className="text-[31px] text-[#075fd7]" />
+            <p className="mt-2 pl-1 text-[10px] font-black tracking-[0.24em] text-slate-400 uppercase">
               Gestion Clinique
             </p>
           </div>
@@ -60,25 +59,27 @@ export function PortalShell({ children }: PropsWithChildren) {
         </div>
 
         <nav
-          className="mt-8 min-h-0 flex-1 space-y-1 overflow-y-auto pr-1"
+          className="mt-9 min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-1"
           aria-label="Navigation principale"
         >
           {navigation.map(({ label, to, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
+              end
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  'flex min-h-11 items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition-[background-color,color,transform,box-shadow] active:scale-[0.98]',
+                  'group flex min-h-12 items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-extrabold transition-[background-color,color,transform,box-shadow] active:scale-[0.98]',
                   isActive
-                    ? 'bg-[#075fd7] text-white shadow-[0_14px_32px_rgba(7,95,215,0.22)]'
-                    : 'text-slate-600 hover:bg-blue-50 hover:text-[#075fd7]',
+                    ? 'bg-[#075fd7] text-white shadow-[0_16px_34px_rgba(7,95,215,0.22)]'
+                    : 'text-slate-600 hover:bg-[#eef5ff] hover:text-[#075fd7]',
                 )
               }
             >
               <Icon className="size-5 shrink-0" strokeWidth={1.9} />
               <span className="truncate">{label}</span>
+              <ChevronRight className="ml-auto size-4 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-60" />
             </NavLink>
           ))}
         </nav>
@@ -87,7 +88,7 @@ export function PortalShell({ children }: PropsWithChildren) {
           <button
             type="button"
             onClick={() => void logout()}
-            className="flex min-h-11 w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left text-sm font-bold text-rose-600 transition hover:bg-rose-50"
+            className="flex min-h-12 w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-extrabold text-rose-600 transition hover:bg-rose-50"
           >
             <LogOut className="size-5" strokeWidth={1.9} aria-hidden="true" />
             Déconnexion
@@ -95,8 +96,8 @@ export function PortalShell({ children }: PropsWithChildren) {
         </div>
       </aside>
 
-      <div className="lg:pl-[288px]">
-        <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-slate-200 bg-white/85 px-4 backdrop-blur-xl sm:px-6">
+      <div className="lg:pl-[292px]">
+        <header className="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-slate-200/80 bg-white/88 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <button
               type="button"
@@ -110,7 +111,7 @@ export function PortalShell({ children }: PropsWithChildren) {
             <label className="relative hidden w-full max-w-md sm:block">
               <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-slate-400" />
               <input
-                className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-4 pl-10 text-sm font-medium text-slate-700 placeholder:text-slate-400"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-[#f8fbff] pr-4 pl-10 text-sm font-bold text-slate-700 transition outline-none placeholder:text-slate-400 focus:border-[#075fd7] focus:bg-white focus:ring-4 focus:ring-blue-100"
                 placeholder="Rechercher"
               />
             </label>
@@ -119,23 +120,23 @@ export function PortalShell({ children }: PropsWithChildren) {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              className="hidden size-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm hover:bg-blue-50 hover:text-[#075fd7] sm:grid"
+              className="hidden size-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-[0_10px_28px_rgba(15,23,42,0.08)] transition hover:bg-blue-50 hover:text-[#075fd7] sm:grid"
               aria-label="Notifications"
             >
               <Bell className="size-5" aria-hidden="true" />
             </button>
 
             <div className="hidden text-right leading-tight sm:block">
-              <p className="text-xs font-bold tracking-[0.16em] text-[#075fd7] uppercase">
+              <p className="text-xs font-black tracking-[0.18em] text-[#075fd7] uppercase">
                 {roleLabels[user.role]}
               </p>
-              <p className="mt-1 max-w-40 truncate text-sm font-semibold text-[#14213a]">
+              <p className="mt-1 max-w-40 truncate text-sm font-extrabold text-[#14213a]">
                 {user.displayName}
               </p>
             </div>
 
             <div
-              className="grid size-10 place-items-center rounded-full bg-[#d9e5ff] text-xs font-bold text-[#075fd7] ring-2 ring-white"
+              className="grid size-12 place-items-center rounded-full bg-[#d9e6ff] text-sm font-black text-[#075fd7] ring-4 ring-white"
               aria-hidden="true"
             >
               {initials}
@@ -143,7 +144,7 @@ export function PortalShell({ children }: PropsWithChildren) {
           </div>
         </header>
 
-        <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="px-4 py-8 sm:px-6 lg:px-10">{children}</main>
       </div>
     </div>
   )
