@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/api/client'
 import type { components } from '@/types/api'
 
-// We infer these type names based on standard OpenAPI generation 
+// We infer these type names based on standard OpenAPI generation
 // (just like the Doctors module)
 export type Patient = components['schemas']['PatientResponse']
 export type PatientPage = components['schemas']['PageResponsePatientResponse']
@@ -15,7 +15,11 @@ export interface PatientListParams {
 }
 
 // 1. GET /api/v1/patients
-export async function getPatients({ page, size = 20, sort = 'id,desc' }: PatientListParams) {
+export async function getPatients({
+  page,
+  size = 20,
+  sort = 'id,desc',
+}: PatientListParams) {
   const { data } = await apiClient.get<PatientPage>('/patients', {
     params: { page, size, sort },
   })
@@ -48,7 +52,7 @@ export async function deletePatient(id: number) {
 // 6. GET /api/v1/patients/search
 export async function searchPatients(query: string) {
   const { data } = await apiClient.get<PatientPage>('/patients/search', {
-    params: { keyword: query } // Assuming 'q' or similar is the search param
+    params: { keyword: query }, // Assuming 'q' or similar is the search param
   })
   return data
 }

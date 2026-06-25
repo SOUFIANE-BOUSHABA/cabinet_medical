@@ -10,7 +10,8 @@ import {
 export const patientKeys = {
   all: ['patients'] as const,
   lists: () => [...patientKeys.all, 'list'] as const,
-  list: (page: number, size: number) => [...patientKeys.lists(), { page, size }] as const,
+  list: (page: number, size: number) =>
+    [...patientKeys.lists(), { page, size }] as const,
   details: () => [...patientKeys.all, 'detail'] as const,
   detail: (id: number) => [...patientKeys.details(), id] as const,
   searches: () => [...patientKeys.all, 'search'] as const,
@@ -26,7 +27,7 @@ export function patientsQuery(page: number, size: number = 20) {
     queryKey: patientKeys.list(page, size),
     queryFn: () => getPatients({ page, size }),
     // keepPreviousData prevents the screen from flickering blank when clicking "Next Page"
-    placeholderData: keepPreviousData, 
+    placeholderData: keepPreviousData,
   }
 }
 

@@ -7,10 +7,18 @@ vi.mock('@/lib/api/client', () => ({
     post: vi.fn(),
     patch: vi.fn(),
   },
-  getApiErrorMessage: vi.fn((error) => error?.response?.data?.message ?? 'Erreur inconnue'),
+  getApiErrorMessage: vi.fn(
+    (error) => error?.response?.data?.message ?? 'Erreur inconnue',
+  ),
 }))
 
-const { getMyAppointments, getAvailableSlots, requestAppointment, cancelAppointment, getAppointment } = await import('@/features/appointments/api/appointments-api')
+const {
+  getMyAppointments,
+  getAvailableSlots,
+  requestAppointment,
+  cancelAppointment,
+  getAppointment,
+} = await import('@/features/appointments/api/appointments-api')
 
 describe('appointments API', () => {
   beforeEach(() => {
@@ -19,7 +27,13 @@ describe('appointments API', () => {
 
   describe('getMyAppointments', () => {
     it('appelle GET /appointments/my avec les bons paramètres', async () => {
-      const mockData = { content: [], page: 0, size: 20, totalElements: 0, totalPages: 0 }
+      const mockData = {
+        content: [],
+        page: 0,
+        size: 20,
+        totalElements: 0,
+        totalPages: 0,
+      }
       vi.mocked(apiClient.get).mockResolvedValue({ data: mockData })
 
       const result = await getMyAppointments({ page: 0, size: 20 })
@@ -45,15 +59,21 @@ describe('appointments API', () => {
     it('appelle GET /appointments/available-slots avec doctorId et date', async () => {
       const mockSlots = [
         { startTime: { hour: 9, minute: 0 }, endTime: { hour: 9, minute: 30 } },
-        { startTime: { hour: 10, minute: 0 }, endTime: { hour: 10, minute: 30 } },
+        {
+          startTime: { hour: 10, minute: 0 },
+          endTime: { hour: 10, minute: 30 },
+        },
       ]
       vi.mocked(apiClient.get).mockResolvedValue({ data: mockSlots })
 
       const result = await getAvailableSlots(1, '2026-07-15')
 
-      expect(apiClient.get).toHaveBeenCalledWith('/appointments/available-slots', {
-        params: { doctorId: 1, date: '2026-07-15' },
-      })
+      expect(apiClient.get).toHaveBeenCalledWith(
+        '/appointments/available-slots',
+        {
+          params: { doctorId: 1, date: '2026-07-15' },
+        },
+      )
       expect(result).toEqual(mockSlots)
     })
   })
@@ -71,7 +91,10 @@ describe('appointments API', () => {
 
       const result = await requestAppointment(payload)
 
-      expect(apiClient.post).toHaveBeenCalledWith('/appointments/request', payload)
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/appointments/request',
+        payload,
+      )
       expect(result).toEqual(mockResponse)
     })
 
@@ -95,7 +118,9 @@ describe('appointments API', () => {
 
   describe('cancelAppointment', () => {
     it('appelle PATCH /appointments/{id}/cancel', async () => {
-      vi.mocked(apiClient.patch).mockResolvedValue({ data: { id: 1, status: 'CANCELLED' } })
+      vi.mocked(apiClient.patch).mockResolvedValue({
+        data: { id: 1, status: 'CANCELLED' },
+      })
 
       const result = await cancelAppointment(1)
 
