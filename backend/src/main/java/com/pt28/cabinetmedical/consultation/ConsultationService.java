@@ -64,7 +64,13 @@ public class ConsultationService {
     }
 
     @Transactional(readOnly = true)
-    public List<ConsultationResponse> getByRecord(Long recordId) {
+    public List<ConsultationResponse> getByRecord(Long recordId, AuthPrincipal principal) {
+        MedicalRecord record = medicalRecordRepository.findById(recordId)
+                .orElseThrow(() -> new ResourceNotFoundException("MedicalRecord", recordId));
+        if (principal.isPatient()
+                && (record.getPatient() == null || !principal.id().equals(record.getPatient().getId()))) {
+            throw new ForbiddenAccessException("You are not allowed to access another patient's consultations");
+        }
         return consultationRepository.findByMedicalRecordIdOrderByConsultationDateDesc(recordId).stream()
                 .map(ConsultationMapper::toResponse)
                 .toList();

@@ -42,10 +42,11 @@ public class ConsultationController {
     }
 
     @GetMapping("/record/{recordId}")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR','SECRETARY')")
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR','SECRETARY','PATIENT')")
     @Operation(summary = "List consultations of a medical record")
-    public List<ConsultationResponse> getByRecord(@PathVariable Long recordId) {
-        return service.getByRecord(recordId);
+    public List<ConsultationResponse> getByRecord(@PathVariable Long recordId,
+                                                  @AuthenticationPrincipal AuthPrincipal principal) {
+        return service.getByRecord(recordId, principal);
     }
 
     @PutMapping("/{id}")

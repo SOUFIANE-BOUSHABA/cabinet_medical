@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   AlertCircle,
+  Download,
   FileText,
   FolderOpen,
   Paperclip,
@@ -17,6 +18,7 @@ import { DoctorDialog } from '@/features/doctors/ui/doctor-dialog'
 import { documentsByRecordQuery } from '@/features/documents/api/document-queries'
 import {
   deleteDocument,
+  downloadDocument,
   MAX_DOCUMENT_SIZE,
   uploadDocument,
   type MedicalDocument,
@@ -41,6 +43,7 @@ export function DocumentsPage() {
   const [selectedRecordId, setSelectedRecordId] = useState(0)
   const [recordSearch, setRecordSearch] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<MedicalDocument | null>(null)
+  const [downloadingId, setDownloadingId] = useState<number | null>(null)
 
   const recordsQuery = useQuery(medicalRecordsQuery())
   const records = useMemo(
@@ -86,6 +89,15 @@ export function DocumentsPage() {
       setDeleteTarget(null)
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
+  })
+
+  const downloadMutation = useMutation({
+    mutationFn: ({ id, fileName }: { id: number; fileName: string }) =>
+      downloadDocument(id, fileName),
+    onMutate: ({ id }) => setDownloadingId(id),
+    onSuccess: () => toast.success('Document telecharge'),
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+    onSettled: () => setDownloadingId(null),
   })
 
   const onPickFile = () => {
@@ -282,6 +294,26 @@ export function DocumentsPage() {
                         {formatDateTime(document.uploadedAt)}
                       </p>
                     </div>
+                    <button
+                      type="button"
+                      disabled={
+                        !document.id ||
+                        downloadingId === document.id ||
+                        downloadMutation.isPending
+                      }
+                      onClick={() =>
+                        document.id &&
+                        document.fileName &&
+                        downloadMutation.mutate({
+                          id: document.id,
+                          fileName: document.fileName,
+                        })
+                      }
+                      className="grid size-8 shrink-0 place-items-center rounded-md text-slate-500 hover:bg-blue-50 hover:text-[#075bd8] disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label="Telecharger le document"
+                    >
+                      <Download className="size-4" />
+                    </button>
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(document)}
