@@ -89,6 +89,7 @@ function App() {
           path="/admin/medical-records"
           element={<StaffMedicalRecordsPage />}
         />
+        <Route path="/admin/documents" element={<DocumentsPage />} />
         <Route
           path="/admin/notifications"
           element={<NotificationsPage expectedRole="ADMIN" />}
@@ -115,6 +116,7 @@ function App() {
           path="/secretary/medical-records"
           element={<StaffMedicalRecordsPage />}
         />
+        <Route path="/secretary/documents" element={<DocumentsPage />} />
         <Route
           path="/secretary/notifications"
           element={<NotificationsPage expectedRole="SECRETARY" />}

@@ -5,6 +5,12 @@ export type MedicalDocument = components['schemas']['DocumentResponse']
 
 export const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024 // 10 MB (backend multipart limit)
 
+// GET /api/v1/documents/my
+export async function getMyDocuments() {
+  const { data } = await apiClient.get<MedicalDocument[]>('/documents/my')
+  return data
+}
+
 // GET /api/v1/documents/record/{recordId}
 export async function getDocumentsByRecord(recordId: number) {
   const { data } = await apiClient.get<MedicalDocument[]>(
@@ -35,4 +41,19 @@ export async function uploadDocument(recordId: number, file: File) {
 // DELETE /api/v1/documents/{id}
 export async function deleteDocument(id: number) {
   await apiClient.delete(`/documents/${id}`)
+}
+
+// GET /api/v1/documents/{id}/download
+export async function downloadDocument(id: number, fileName: string) {
+  const { data } = await apiClient.get<Blob>(`/documents/${id}/download`, {
+    responseType: 'blob',
+  })
+  const url = window.URL.createObjectURL(data)
+  const link = window.document.createElement('a')
+  link.href = url
+  link.setAttribute('download', fileName)
+  window.document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.URL.revokeObjectURL(url)
 }

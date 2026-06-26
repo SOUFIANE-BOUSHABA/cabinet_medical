@@ -87,6 +87,7 @@ export const roleNavigation: Record<UserRole, NavigationItem[]> = {
       to: '/admin/medical-records',
       icon: FileText,
     },
+    { label: 'Documents', to: '/admin/documents', icon: FileText },
     { label: 'Notifications', to: '/admin/notifications', icon: Bell },
     { label: 'Utilisateurs', to: '/admin/users', icon: Users },
     { label: 'Paramètres', to: '/admin/settings', icon: Settings },
@@ -114,6 +115,7 @@ export const roleNavigation: Record<UserRole, NavigationItem[]> = {
       to: '/secretary/medical-records',
       icon: FileText,
     },
+    { label: 'Documents', to: '/secretary/documents', icon: FileText },
     { label: 'Notifications', to: '/secretary/notifications', icon: Bell },
   ],
   DOCTOR: [
