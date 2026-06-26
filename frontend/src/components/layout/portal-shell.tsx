@@ -1,4 +1,4 @@
-import { Bell, ChevronRight, LogOut, Menu, Search, X } from 'lucide-react'
+import { ChevronRight, LogOut, Menu, Search, X } from 'lucide-react'
 import { useState, type PropsWithChildren } from 'react'
 import { NavLink } from 'react-router-dom'
 import { BrandLogo } from '@/features/auth/ui/brand-logo'
@@ -7,6 +7,7 @@ import {
   roleLabels,
   roleNavigation,
 } from '@/features/dashboard/dashboard-model'
+import { NotificationBell } from '@/features/notifications/components/notification-bell'
 import { cn } from '@/lib/utils/cn'
 
 export function PortalShell({ children }: PropsWithChildren) {
@@ -118,13 +119,7 @@ export function PortalShell({ children }: PropsWithChildren) {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="hidden size-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-[0_10px_28px_rgba(15,23,42,0.08)] transition hover:bg-blue-50 hover:text-[#075fd7] sm:grid"
-              aria-label="Notifications"
-            >
-              <Bell className="size-5" aria-hidden="true" />
-            </button>
+            <NotificationBell />
 
             <div className="hidden text-right leading-tight sm:block">
               <p className="text-xs font-black tracking-[0.18em] text-[#075fd7] uppercase">

@@ -5,10 +5,13 @@ import com.pt28.cabinetmedical.appointment.AppointmentRepository;
 import com.pt28.cabinetmedical.common.exception.ResourceNotFoundException;
 import com.pt28.cabinetmedical.notification.dto.NotificationResponse;
 import com.pt28.cabinetmedical.notification.dto.SimulateNotificationRequest;
+import com.pt28.cabinetmedical.security.AuthPrincipal;
+import com.pt28.cabinetmedical.user.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,10 +78,35 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
+    public Page<NotificationResponse> getMine(AuthPrincipal principal, Pageable pageable) {
+        if (principal.hasRole(Role.PATIENT)) {
+            return getForPatient(principal.id(), pageable);
+        }
+        if (principal.hasRole(Role.DOCTOR)) {
+            return notificationRepository.findByAppointmentDoctorUserId(principal.id(), pageable)
+                    .map(NotificationMapper::toResponse);
+        }
+        throw new AccessDeniedException("Notifications personnelles indisponibles pour ce rôle.");
+    }
+
+    @Transactional(readOnly = true)
     public List<NotificationResponse> getByAppointment(Long appointmentId) {
         return notificationRepository.findByAppointmentIdOrderBySentAtDesc(appointmentId).stream()
                 .map(NotificationMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<NotificationResponse> getByAppointmentForPrincipal(Long appointmentId, AuthPrincipal principal) {
+        if (principal.hasRole(Role.DOCTOR)) {
+            Appointment appointment = appointmentRepository.findById(appointmentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Appointment", appointmentId));
+            Long doctorUserId = appointment.getDoctor().getUser().getId();
+            if (!doctorUserId.equals(principal.id())) {
+                throw new AccessDeniedException("Ce rendez-vous n'appartient pas au médecin connecté.");
+            }
+        }
+        return getByAppointment(appointmentId);
     }
 
     private Notification simulateSend(Notification notification) {

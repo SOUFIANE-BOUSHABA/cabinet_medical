@@ -35,18 +35,19 @@ public class NotificationController {
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasRole('PATIENT')")
-    @Operation(summary = "List my notifications (patient)")
+    @PreAuthorize("hasAnyRole('PATIENT','DOCTOR')")
+    @Operation(summary = "List my notifications (patient or doctor)")
     public PageResponse<NotificationResponse> getMine(@AuthenticationPrincipal AuthPrincipal principal,
                                                       @PageableDefault(size = 20) Pageable pageable) {
-        return PageResponse.of(service.getForPatient(principal.id(), pageable), Function.identity());
+        return PageResponse.of(service.getMine(principal, pageable), Function.identity());
     }
 
     @GetMapping("/appointment/{appointmentId}")
     @PreAuthorize("hasAnyRole('ADMIN','DOCTOR','SECRETARY')")
     @Operation(summary = "List notifications for an appointment")
-    public List<NotificationResponse> getByAppointment(@PathVariable Long appointmentId) {
-        return service.getByAppointment(appointmentId);
+    public List<NotificationResponse> getByAppointment(@PathVariable Long appointmentId,
+                                                       @AuthenticationPrincipal AuthPrincipal principal) {
+        return service.getByAppointmentForPrincipal(appointmentId, principal);
     }
 
     @PostMapping("/simulate")

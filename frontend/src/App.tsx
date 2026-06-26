@@ -11,6 +11,7 @@ import { DocumentsPage } from '@/features/documents/pages/documents-page'
 import { DoctorManagementPage } from '@/features/doctors/pages/doctor-management-page'
 import { PatientMedicalRecordPage } from '@/features/medical-records/pages/patient-medical-record-page'
 import { StaffMedicalRecordsPage } from '@/features/medical-records/pages/staff-medical-records-page'
+import { NotificationsPage } from '@/features/notifications/pages/notifications-page'
 import { PatientManagementPage } from '@/features/patients/pages/patient-management-page'
 import { CabinetSettingsPage } from '@/features/settings/pages/cabinet-settings-page'
 import { UserManagementPage } from '@/features/users/pages/user-management-page'
@@ -90,9 +91,7 @@ function App() {
         />
         <Route
           path="/admin/notifications"
-          element={
-            <ModulePlaceholderPage expectedRole="ADMIN" title="Notifications" />
-          }
+          element={<NotificationsPage expectedRole="ADMIN" />}
         />
         <Route path="/admin/users" element={<UserManagementPage />} />
         <Route path="/admin/settings" element={<CabinetSettingsPage />} />
@@ -118,12 +117,7 @@ function App() {
         />
         <Route
           path="/secretary/notifications"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="SECRETARY"
-              title="Notifications"
-            />
-          }
+          element={<NotificationsPage expectedRole="SECRETARY" />}
         />
 
         <Route path="/doctor/patients" element={<PatientManagementPage />} />
@@ -143,12 +137,7 @@ function App() {
         <Route path="/doctor/documents" element={<DocumentsPage />} />
         <Route
           path="/doctor/notifications"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="DOCTOR"
-              title="Notifications"
-            />
-          }
+          element={<NotificationsPage expectedRole="DOCTOR" />}
         />
       </Route>
 
@@ -168,6 +157,7 @@ function App() {
           path="/patient/request-appointment"
           element={<AppointmentBookingPage />}
         />
+
         <Route path="/patient/appointments" element={<MyAppointmentsPage />} />
         <Route
           path="/patient/medical-record"
@@ -175,12 +165,7 @@ function App() {
         />
         <Route
           path="/patient/notifications"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="PATIENT"
-              title="Notifications"
-            />
-          }
+          element={<NotificationsPage expectedRole="PATIENT" />}
         />
       </Route>
 
