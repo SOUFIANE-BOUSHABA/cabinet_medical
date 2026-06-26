@@ -12,5 +12,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     Page<Notification> findByAppointmentPatientId(Long patientId, Pageable pageable);
 
+    Page<Notification> findByAppointmentDoctorUserId(Long doctorUserId, Pageable pageable);
+
     long countByAppointmentPatientId(Long patientId);
 }
