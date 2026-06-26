@@ -135,7 +135,17 @@ public class AppointmentService {
 
     @Transactional(readOnly = true)
     public Page<AppointmentResponse> getAll(AppointmentStatus status, LocalDate date, Pageable pageable) {
-        return appointmentRepository.search(status, date, pageable).map(AppointmentMapper::toResponse);
+        Page<Appointment> appointments;
+        if (status != null && date != null) {
+            appointments = appointmentRepository.findByStatusAndDate(status, date, pageable);
+        } else if (status != null) {
+            appointments = appointmentRepository.findByStatus(status, pageable);
+        } else if (date != null) {
+            appointments = appointmentRepository.findByDate(date, pageable);
+        } else {
+            appointments = appointmentRepository.findAll(pageable);
+        }
+        return appointments.map(AppointmentMapper::toResponse);
     }
 
     @Transactional(readOnly = true)

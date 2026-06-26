@@ -3,9 +3,6 @@ package com.pt28.cabinetmedical.appointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,6 +18,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     Page<Appointment> findByDate(LocalDate date, Pageable pageable);
 
+    Page<Appointment> findByStatus(AppointmentStatus status, Pageable pageable);
+
+    Page<Appointment> findByStatusAndDate(AppointmentStatus status, LocalDate date, Pageable pageable);
+
     List<Appointment> findByPatientIdAndStatus(Long patientId, AppointmentStatus status);
 
     List<Appointment> findByDoctorIdAndDate(Long doctorId, LocalDate date);
@@ -30,13 +31,4 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     long countByDate(LocalDate date);
 
     long countByDateAndStatus(LocalDate date, AppointmentStatus status);
-
-    @Query("""
-            SELECT a FROM Appointment a
-            WHERE (:status IS NULL OR a.status = :status)
-              AND (:date IS NULL OR a.date = :date)
-            """)
-    Page<Appointment> search(@Param("status") AppointmentStatus status,
-                             @Param("date") LocalDate date,
-                             Pageable pageable);
 }
