@@ -7,6 +7,7 @@ import { StaffLoginPage } from '@/features/auth/pages/staff-login-page'
 import { ProtectedRoute, PublicOnlyRoute } from '@/features/auth/route-guards'
 import { DoctorConsultationsPage } from '@/features/consultations/pages/doctor-consultations-page'
 import { DashboardPage } from '@/features/dashboard/pages/dashboard-page'
+import { DocumentsPage } from '@/features/documents/pages/documents-page'
 import { DoctorManagementPage } from '@/features/doctors/pages/doctor-management-page'
 import { PatientMedicalRecordPage } from '@/features/medical-records/pages/patient-medical-record-page'
 import { StaffMedicalRecordsPage } from '@/features/medical-records/pages/staff-medical-records-page'
@@ -139,12 +140,7 @@ function App() {
           path="/doctor/consultations"
           element={<DoctorConsultationsPage />}
         />
-        <Route
-          path="/doctor/documents"
-          element={
-            <ModulePlaceholderPage expectedRole="DOCTOR" title="Documents" />
-          }
-        />
+        <Route path="/doctor/documents" element={<DocumentsPage />} />
         <Route
           path="/doctor/notifications"
           element={
