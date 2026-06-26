@@ -8,6 +8,8 @@ import { ProtectedRoute, PublicOnlyRoute } from '@/features/auth/route-guards'
 import { DoctorConsultationsPage } from '@/features/consultations/pages/doctor-consultations-page'
 import { DashboardPage } from '@/features/dashboard/pages/dashboard-page'
 import { DoctorManagementPage } from '@/features/doctors/pages/doctor-management-page'
+import { PatientMedicalRecordPage } from '@/features/medical-records/pages/patient-medical-record-page'
+import { StaffMedicalRecordsPage } from '@/features/medical-records/pages/staff-medical-records-page'
 import { PatientManagementPage } from '@/features/patients/pages/patient-management-page'
 import { CabinetSettingsPage } from '@/features/settings/pages/cabinet-settings-page'
 import { UserManagementPage } from '@/features/users/pages/user-management-page'
@@ -83,12 +85,7 @@ function App() {
         <Route path="/admin/appointments" element={<StaffAppointmentsPage />} />
         <Route
           path="/admin/medical-records"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="ADMIN"
-              title="Dossiers médicaux"
-            />
-          }
+          element={<StaffMedicalRecordsPage />}
         />
         <Route
           path="/admin/notifications"
@@ -116,12 +113,7 @@ function App() {
         />
         <Route
           path="/secretary/medical-records"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="SECRETARY"
-              title="Dossiers médicaux"
-            />
-          }
+          element={<StaffMedicalRecordsPage />}
         />
         <Route
           path="/secretary/notifications"
@@ -141,12 +133,7 @@ function App() {
         />
         <Route
           path="/doctor/medical-records"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="DOCTOR"
-              title="Dossiers médicaux"
-            />
-          }
+          element={<StaffMedicalRecordsPage />}
         />
         <Route
           path="/doctor/consultations"
@@ -188,12 +175,7 @@ function App() {
         <Route path="/patient/appointments" element={<MyAppointmentsPage />} />
         <Route
           path="/patient/medical-record"
-          element={
-            <ModulePlaceholderPage
-              expectedRole="PATIENT"
-              title="Mon dossier médical"
-            />
-          }
+          element={<PatientMedicalRecordPage />}
         />
         <Route
           path="/patient/notifications"
