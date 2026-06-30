@@ -26,10 +26,15 @@ import {
   type RequestAppointmentFormValues,
 } from '@/features/appointments/schemas/appointment-schemas'
 import { getApiErrorMessage } from '@/lib/api/client'
+import { cn } from '@/lib/utils/cn'
 import { formatTime, serializeTime } from '@/lib/utils/format'
 
 function valueOrDash(value?: string) {
   return value?.trim() || 'Non renseigné'
+}
+
+function isSlotAvailable(slot: AvailableSlot) {
+  return (slot as AvailableSlot & { available?: boolean }).available !== false
 }
 
 export function AppointmentBookingPage() {
@@ -88,6 +93,7 @@ export function AppointmentBookingPage() {
   }
 
   function handleSelectSlot(slot: AvailableSlot) {
+    if (!isSlotAvailable(slot)) return
     const time = formatTime(slot.startTime)
     setSelectedSlot(time)
     form.setValue('startTime', time)
@@ -240,18 +246,31 @@ export function AppointmentBookingPage() {
                   </div>
                 ) : slots.data && slots.data.length > 0 ? (
                   <>
-                    <p className="mb-2 text-[11px] font-semibold text-[#5f6c81]">
-                      Créneaux disponibles
-                    </p>
+                   
+                  
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                       {slots.data.map((slot, idx) => {
                         const time = formatTime(slot.startTime)
+                        const available = isSlotAvailable(slot)
                         return (
                           <button
                             key={idx}
                             type="button"
-                            onClick={() => handleSelectSlot(slot)}
-                            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#cfd7e7] bg-white px-3 py-2 text-xs font-semibold text-[#17233b] transition-colors hover:border-[#075bd8] hover:bg-blue-50 hover:text-[#075bd8]"
+                            disabled={!available}
+                            title={
+                              available
+                                ? 'CrÃ©neau disponible'
+                                : 'CrÃ©neau indisponible'
+                            }
+                            onClick={() => {
+                              if (available) handleSelectSlot(slot)
+                            }}
+                            className={cn(
+                              'inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors',
+                              available
+                                ? 'border-[#cfd7e7] bg-white text-[#17233b] hover:border-[#075bd8] hover:bg-blue-50 hover:text-[#075bd8]'
+                                : 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400 opacity-75',
+                            )}
                           >
                             <Clock className="size-3" />
                             {time}

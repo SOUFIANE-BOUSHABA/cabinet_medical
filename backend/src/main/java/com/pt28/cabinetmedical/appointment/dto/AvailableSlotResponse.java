@@ -4,6 +4,7 @@ import java.time.LocalTime;
 
 public record AvailableSlotResponse(
         LocalTime startTime,
-        LocalTime endTime
+        LocalTime endTime,
+        boolean available
 ) {
 }

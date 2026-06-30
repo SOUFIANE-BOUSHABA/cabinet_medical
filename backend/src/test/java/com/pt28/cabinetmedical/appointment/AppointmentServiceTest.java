@@ -73,4 +73,23 @@ class AppointmentServiceTest {
         assertThat(response.endTime()).isEqualTo(LocalTime.of(9, 30));
         assertThat(response.status().name()).isEqualTo("CONFIRMED");
     }
+
+    @Test
+    void getAvailableSlots_returnsBookedSlotsAsUnavailable() {
+        LocalDate date = LocalDate.now().plusDays(5);
+        appointmentService.createByStaff(new CreateAppointmentRequest(
+                patientId, doctorId, date, LocalTime.of(10, 0), "Booked", null));
+
+        var slots = appointmentService.getAvailableSlots(doctorId, date);
+
+        assertThat(slots).isNotEmpty();
+        assertThat(slots)
+                .filteredOn(slot -> slot.startTime().equals(LocalTime.of(9, 0)))
+                .singleElement()
+                .satisfies(slot -> assertThat(slot.available()).isTrue());
+        assertThat(slots)
+                .filteredOn(slot -> slot.startTime().equals(LocalTime.of(10, 0)))
+                .singleElement()
+                .satisfies(slot -> assertThat(slot.available()).isFalse());
+    }
 }
