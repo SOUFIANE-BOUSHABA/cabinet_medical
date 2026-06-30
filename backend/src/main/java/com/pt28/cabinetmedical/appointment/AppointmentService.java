@@ -172,16 +172,14 @@ public class AppointmentService {
         return appointmentRepository.findByDate(date, pageable).map(AppointmentMapper::toResponse);
     }
 
-    /** Free slots for a doctor on a date, respecting opening hours, existing bookings and daily limit. */
+    /** All slots for a doctor on a date, marking booked or blocked slots as unavailable. */
     @Transactional(readOnly = true)
     public List<AvailableSlotResponse> getAvailableSlots(Long doctorId, LocalDate date) {
         Doctor doctor = doctorService.findEntity(doctorId);
         CabinetSettings settings = settingsService.getSettingsEntity();
         List<AvailableSlotResponse> slots = new ArrayList<>();
-
-        if (isDailyLimitReached(date, settings)) {
-            return slots; // no slot available — daily limit reached (rule 6)
-        }
+        boolean dailyLimitReached = isDailyLimitReached(date, settings);
+        boolean doctorAvailable = isDoctorAvailable(doctor);
 
         List<Appointment> booked = appointmentRepository
                 .findByDoctorIdAndDateAndStatusNot(doctor.getId(), date, AppointmentStatus.CANCELLED);
@@ -192,9 +190,7 @@ public class AppointmentService {
             LocalTime end = cursor.plusMinutes(duration);
             LocalTime slotStart = cursor;
             boolean overlaps = booked.stream().anyMatch(a -> a.getStartTime().isBefore(end) && slotStart.isBefore(a.getEndTime()));
-            if (!overlaps && isDoctorAvailable(doctor)) {
-                slots.add(new AvailableSlotResponse(slotStart, end));
-            }
+            slots.add(new AvailableSlotResponse(slotStart, end, !dailyLimitReached && doctorAvailable && !overlaps));
             cursor = end;
         }
         return slots;
